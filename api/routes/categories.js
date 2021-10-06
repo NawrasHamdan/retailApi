@@ -1,8 +1,11 @@
 const router = require('express').Router();
 const Category = require('../models/category');
+const { VerfiyAcccessToken } = require('../helpers/jwt_helper');
 
-router.get('/', async (req, res, next) => {
 
+router.get('/', VerfiyAcccessToken, async (req, res, next) => {
+
+  console.log(req.payload.aud);
   try {
     const data = await Category.find().exec();
     return res.send(data);

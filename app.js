@@ -11,7 +11,6 @@ app.use(morgan('dev'));
 //connect to database
 require('./api/helpers/database');
 
-
 //routes
 const categoriesRouter = require('./api/routes/categories');
 const productsRouter = require('./api/routes/products');
@@ -24,6 +23,7 @@ app.use('/categories', categoriesRouter);
 app.use('/products', productsRouter);
 app.use('/orders', ordersRouter);
 app.use('/account', accountRouter);
+
 //url not found
 app.use((req, res, next) => {
   next(createError.NotFound());
@@ -57,17 +57,15 @@ if (process.env.ENV == 'production') {
   } else {
     // Workers can share any TCP connection
     // In this case it is an HTTP server
-    http.createServer((req, res) => {
-      res.writeHead(200);
-      res.end('hello world\n');
-    }).listen(8000);
+    app.listen(8000, () => {
+      console.log("Cluster started at port 8000");
+    });
 
     console.log(`Worker ${process.pid} started`);
   }
 }
-
 // if enviroment isn't production start up normally on one thread
 else {
-  app.listen(3000, () => console.log('the server has started on port 3000'));
+  app.listen(3000, () => console.log('development server has started on port 3000'));
 
-}
+};
