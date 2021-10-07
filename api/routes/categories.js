@@ -3,9 +3,7 @@ const Category = require('../models/category');
 const { VerfiyAcccessToken } = require('../helpers/jwt_helper');
 
 
-router.get('/', VerfiyAcccessToken, async (req, res, next) => {
-
-  console.log(req.payload.aud);
+router.get('/', async (req, res, next) => {
   try {
     const data = await Category.find().exec();
     return res.send(data);
@@ -15,8 +13,9 @@ router.get('/', VerfiyAcccessToken, async (req, res, next) => {
   };
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', VerfiyAcccessToken, async (req, res, next) => {
   try {
+
     const category = {
       name_en: req.body.name_en,
       name_ar: req.body.name_ar,

@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const createError = require('http-errors');
 const { loginValidator, registerValidator } = require('../helpers/Joi_validation');
-const { signAccessToken, singRefreshToken, verfiyRefreshToken, VerfiyAcccessToken } = require('../helpers/jwt_helper');
+const { signAccessToken, singRefreshToken, verfiyRefreshToken } = require('../helpers/jwt_helper');
 
 router.post('/register', async (req, res, next) => {
 
@@ -38,7 +38,7 @@ router.post('/login', async (req, res, next) => {
         if (login === true) {
             const Token = await signAccessToken(result._id);
             const refreshToken = await singRefreshToken(result._id)
-            return res.send({ Token, refreshToken });
+            return res.send({ Token, refreshToken, userId: result._id.toString() });
         }
         //blyat user
         return next(createError.Unauthorized(`invalid login credentials`));
@@ -51,7 +51,15 @@ router.post('/login', async (req, res, next) => {
 router.post('/refresh-token', async (req, res, next) => {
     try {
         const refreshToken = req.body.refreshToken;
-        const userId = await verfiyRefreshToken(refreshToken);
+        const routedRequestUserid = req.body.userId;
+        let userId;
+        verfiyRefreshToken(refreshToken, routedRequestUserid, (err, userId) => {
+            userId = userId;
+            console.log(userId);
+
+        });
+
+
         const Token = await signAccessToken(userId);
         const newRefreshToken = await singRefreshToken(userId);
         return res.send({ Token: Token, refreshToken: newRefreshToken });

@@ -11,6 +11,9 @@ app.use(morgan('dev'));
 //connect to database
 require('./api/helpers/database');
 
+//connect to redis
+require('./api/helpers/redis_init');
+
 //routes
 const categoriesRouter = require('./api/routes/categories');
 const productsRouter = require('./api/routes/products');
